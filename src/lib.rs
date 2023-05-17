@@ -28,7 +28,7 @@ pub fn inspect(path: &str) -> Option<Vec<String>> {
             let full_entry_path = entry.path();
             let entry_path = full_entry_path.strip_prefix(current_path.clone()).unwrap();
             let dest_path = read_link(full_entry_path).unwrap();
-            println!("\tcurrent {}\n\tentry {}\n\tdest {}", current_path.display(), full_entry_path.display(), dest_path.display());
+            //println!("\tcurrent {}\n\tentry {}\n\tdest {}", current_path.display(), full_entry_path.display(), dest_path.display());
 
             // make dest_path absolute and canocical
             let mut full_dest_path = if ! dest_path.to_str().unwrap().starts_with("/") {
@@ -41,10 +41,11 @@ pub fn inspect(path: &str) -> Option<Vec<String>> {
             match result {
                 Ok(p) => {
                     full_dest_path = p;
-                    println!("debug: caconical symlink {}", full_dest_path.display());
+                    //println!("debug: caconical symlink {}", full_dest_path.display());
                 },
-                Err(_) => {
-                    msg.push(format!("{} is pointing outside to {}", entry_path.display(), dest_path.display()));
+                Err(_) => { // File does not exist
+                    println!("here");
+                    msg.push(format!("{} is broken, pointing to `{}`", entry_path.display(), dest_path.display()));
                     continue;
                 }
             };
@@ -52,7 +53,7 @@ pub fn inspect(path: &str) -> Option<Vec<String>> {
 
             // check if dest is inside the dir we are exploring
             if ! full_dest_path.starts_with(&current_path) {
-                msg.push(format!("{} is pointing outsite to {}", entry_path.display(), dest_path.display()));
+                msg.push(format!("{} is pointing outside, to `{}`", entry_path.display(), dest_path.display()));
                 continue;
             }
 
@@ -93,7 +94,7 @@ mod test {
 
     #[test]
     fn test_inspect_pointing_outside() {
-        assert_eq!(inspect("data/pointing_outside"), Some(vec!["link is pointing outside to ../valid_dir".to_string()]));
+        assert_eq!(inspect("data/pointing_outside"), Some(vec!["outside is pointing outside, to `../../src`".to_string()]));
     }
 
     #[test]
@@ -108,7 +109,7 @@ mod test {
 
     #[test]
     fn test_inspect_broken_softlink() {
-        assert_eq!(inspect("data/broken_softlink"), Some(vec!["link".to_string()]));
+        assert_eq!(inspect("data/broken_softlink"), Some(vec!["link is broken, pointing to `file`".to_string()]));
     }
 
     #[test]
