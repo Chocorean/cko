@@ -1,14 +1,14 @@
-# seco
+# cko
 
 Check if a directory is self-contained.
 
 ## Usage
 
 ```bash
-$ seco good_dir
+$ cko good_dir
 $ echo $?
 0
-$ seco bad_dir
+$ cko bad_dir
 `outsite_link` is pointing outside of `bad_dir`
 $ echo $?
 1
@@ -16,7 +16,7 @@ $ echo $?
 
 ## Installation
 
-`cargo install seco`
+`cargo install cko` (incoming)
 
 ## Tests
 
